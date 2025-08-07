@@ -288,7 +288,7 @@ def getWater(p, T, debug=0):
 
     y = qd*xi
     if (y >= 1.2E-7):
-        Z = 2/(PI*y)*(((1 - cv/cp)*np.atan(y) + cv/cp*y) - ( 1 - np.exp((-1)/(1/y+y**2/(3*rhorel**2)))))
+        Z = 2/(np.pi*y)*(((1 - cv/cp)*np.atan(y) + cv/cp*y) - ( 1 - np.exp((-1)/(1/y+y**2/(3*rhorel**2)))))
     else:
         Z = 0
 

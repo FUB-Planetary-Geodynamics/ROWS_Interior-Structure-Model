@@ -668,7 +668,7 @@ def getmu(rho,T,debug=0): #http://www.iapws.org/relguide/visc.pdf
     dx = rhorel*(zeta1-zeta2*Tr/Trel)
 
     if (dx >= 0):
-      xi = e0* (dx/Gam0)**(v/gam)
+      xi = e0* (dx/gam0)**(v/gam)
     else:
       xi = 0
 
