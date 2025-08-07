@@ -123,14 +123,17 @@ def EOS_rock(Pr,T,arr_species,mf_vec,Store_V_vec=[]): # Pressure, Temperature, A
             if T<Tm: # ice phase
                 if phase == 10:
                     Cp, rho, alpha, KT, KS, mu, M, V, V0 = mineral(Pr, T, 'iceX')
+                    mu = 0.0
                 elif phase == 7:
                     Cp, rho, alpha, KT, KS, mu, M, V, V0 = mineral(Pr, T, 'iceVII')
+                    mu = 0.0
                 elif phase == 1: # simple estimate for now since ice shell is anyway very thin
                     Cp = 2090
                     alpha = 5.0e-5
                     rho = 920
                 else:  # so far only phase 6, no surface ice included
                     Cp, rho, alpha, KT, KS, mu, M, V, V0 = mineral(Pr, T, 'iceVI')
+                    mu = 0.0
             else:
                 [rho, alpha, Cp, k, error] = getWater(Pr*1e9, T)
 

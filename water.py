@@ -10,6 +10,7 @@ This module contains a subroutine (getWater) to calculate  thermodynamic propert
 - From CHIC, (C) Heistracher and Noack
 '''
 from Help_functions import getphase,getrho,getmu,GetHelmholtz
+import EOS_functions
 import numpy as np
 
 def getWater(p, T, debug=0):
@@ -42,25 +43,16 @@ def getWater(p, T, debug=0):
     p_GPa = p*1.0e-9
     if (phase > 0): #if not solid
       error = -phase #2
-      print("STOP Water is solid p =",p,"T = ",T," with phase: ",phase)
+      #print("STOP Water is solid p =",p,"T = ",T," with phase: ",phase)
 
       if (phase == 6): # ice VI
-        #call DensityEOS(rho,p_GPa,T,1271.7,14.05,4.0,0.0,0.0,0.0,0.0,0.0,0.0,0,1,0,0) # Bezacier et al., 2014
-        alpha = 14.6e-5
-        rho = rho * np.exp( alpha * (T0 - T) ) # Bezacier et al., 2014
-        cp = 4023.8 + 0.168 * T - 8.004e-5 * T**(-2) # from Tchijov et al., 2004, formula for ice VII extrapolated
-        k = (0.046*p_GPa**2 - 0.0751*p_GPa + 3.9377) # Chen et al., 2011, for Ice VII
+        cp, rho, alpha, KT, KS, mu, M, V, V0 = EOS_functions.mineral(p_GPa, T, 'iceVI')
+        k = (0.046 * p_GPa ** 2 - 0.0751 * p_GPa + 3.9377)  # Chen et al., 2011, for Ice VII
       elif (phase == 7): # ice VII
-        #call DensityEOS(rho,p_GPa,T,1442.4,20.15,4.0,0.0,0.0,0.0,0.0,0.0,0.0,0,1,0,0) # Bezacier et al., 2014
-        alpha = 11.58e-5
-        rho = rho * np.exp( alpha * (T0 - T) ) # Bezacier et al., 2014
-        cp = 4023.8 + 0.168 * T - 8.004e-5 * T**(-2) # from Tchijov et al., 2004
+        cp, rho, alpha, KT, KS, mu, M, V, V0 = EOS_functions.mineral(p_GPa, T, 'iceVII')
         k = (0.046*p_GPa**2 - 0.0751*p_GPa + 3.9377) # Chen et al., 2011, for Ice VII
       elif (phase == 10): # ice X
-        #call DensityEOS(rho,p_GPa,T,2318.6,162.8,4.42,0.0,0.0,0.0,0.0,0.0,0.0,0,1,0,0) # Journaux et al., 2014
-        alpha = 11.58e-5 # value taken from ice VII, since for ice X not yet known (Journaux et al., 2014)
-        rho = rho * np.exp( alpha * (T0 - T) ) # Bezacier et al., 2014
-        cp = 4023.8 + 0.168 * T - 8.004e-5 * T**(-2) # from Tchijov et al., 2004, formula for ice VII extrapolated
+        cp, rho, alpha, KT, KS, mu, M, V, V0 = EOS_functions.mineral(p_GPa, T, 'iceX')
         k = (0.046*p_GPa**2 - 0.0751*p_GPa + 3.9377) # Chen et al., 2011, for Ice VII
 
       return rho, alpha, cp, k, error
@@ -242,7 +234,9 @@ def getWater(p, T, debug=0):
       for j in range(6):
         k1 = k1 + (1.0/Trel-1.0)**i * A1[i,j]*(rhorel-1.0)**j
 
-    k1 = np.exp(rhorel*k1)
+    # print(k1,np.exp(rhorel*k1))
+    if k1<100: # otherwise anyway wrong k1 value
+        k1 = np.exp(rhorel*k1)
     if (debug >= 3):
         print("k1_rel=",k1)
 
